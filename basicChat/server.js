@@ -13,4 +13,5 @@ const io = socketio(expressServer)
 io.on('connection', socket => {
   socket.emit('messageFromServer', { data: 'Welcome to the socketio server' })
   socket.on('messageToServer', dataFromClient => console.log(dataFromClient))
+  socket.on('newMessageToServer', ({ text }) => console.log(`New Message: ${text}`))
 })

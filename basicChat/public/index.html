@@ -43,8 +43,7 @@
 
     msgForm.addEventListener('submit', e => {
       e.preventDefault()
-      console.log('submit')
-      console.log(msgInput.value)
+      socket.emit('newMessageToServer', { text: msgInput.value })
     })
   </script>
 </body>
