@@ -20,6 +20,7 @@
             <input class="btn btn-primary" type="submit" value="Send!" />
           </div>
         </form>
+        <p id="loading">Loading...</p>
         <ul id="messages"><!-- will be populated by JS --></ul>
       </div>
     </div>
@@ -27,24 +28,54 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    const loading = document.getElementById('loading')
     const msgForm = document.getElementById('message-form')
     const msgInput = document.getElementById('user-message')
+    const messages = document.getElementById('messages')
 
     const socket = io('http://localhost:8000')
-    socket.on('messageFromServer', dataFromServer => {
-      console.log(dataFromServer)
-      socket.emit('messageToServer', { data: 'This is from the client' })
-      
-    })
-    // socket.on('ping', () => console.log('Ping was received from Server'))
-    socket.on('pong', function(data) {
-      console.log('Received Pong: ', data);
-    });
 
-    msgForm.addEventListener('submit', e => {
+    let user
+
+    const renderUser = u => {
+      user = u
+      loading.style.display = 'none'
+      const h1 = document.createElement('h1')
+      h1.innerHTML = `
+        <img src="${user.avatar}" alt="${user.username}" width="100" height="auto" />
+        <strong>${user.username}</strong>
+      `
+      document.body.prepend(h1)
+    }
+
+    const renderMessage = ({ user, text }) => {
+      const div = document.createElement('div')
+      const badge = `
+        <div class="row">
+          <img src="${user.avatar}" alt="${user.username}" width="50" height="auto" />
+          <h6>${user.username}</h6>
+          ${text}
+        </div>
+      `
+      div.innerHTML = badge
+      messages.appendChild(div)
+    }
+
+    const submit = e => {
       e.preventDefault()
-      socket.emit('newMessageToServer', { text: msgInput.value })
-    })
+      const msg = { 
+        user,
+        text: msgInput.value 
+      }
+      renderMessage(msg)
+      socket.emit('newMessageToServer', msg)
+      msgInput.value = ''
+    }
+
+    socket.on('newUser', renderUser)
+    socket.on('incomingMessage', msg => renderMessage(msg))
+
+    msgForm.addEventListener('submit', submit)
   </script>
 </body>
 </html>

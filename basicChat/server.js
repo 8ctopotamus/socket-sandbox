@@ -1,5 +1,6 @@
 const express = require('express')
 const socketio = require('socket.io')
+const faker = require('faker')
 
 const PORT = process.env.PORT || 8000
 
@@ -11,7 +12,12 @@ const expressServer = app.listen(PORT, () => console.log(`Listening at http://lo
 const io = socketio(expressServer)
 
 io.on('connection', socket => {
-  socket.emit('messageFromServer', { data: 'Welcome to the socketio server' })
-  socket.on('messageToServer', dataFromClient => console.log(dataFromClient))
-  socket.on('newMessageToServer', ({ text }) => console.log(`New Message: ${text}`))
+  socket.emit('newUser', {
+    ...faker.helpers.createCard(),
+    avatar: faker.image.animals()
+  })
+  
+  socket.on('newMessageToServer', msg => {
+    socket.broadcast.emit('incomingMessage', { ...msg, created: new Date() })
+  })
 })
