@@ -14,10 +14,11 @@ const io = socketio(expressServer)
 io.on('connection', socket => {
   socket.emit('newUser', {
     ...faker.helpers.createCard(),
-    avatar: faker.image.animals()
+    avatar: faker.image.animals(),
+    uuid: faker.datatype.uuid,
   })
   
   socket.on('newMessageToServer', msg => {
-    socket.broadcast.emit('incomingMessage', { ...msg, created: new Date() })
+    io.emit('incomingMessage', { ...msg, created: new Date() })
   })
 })

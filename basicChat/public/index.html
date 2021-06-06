@@ -35,27 +35,29 @@
 
     const socket = io('http://localhost:8000')
 
-    let user
+    let currentUser
 
     const renderUser = u => {
-      user = u
+      currentUser = u
       loading.style.display = 'none'
       const h1 = document.createElement('h1')
       h1.innerHTML = `
-        <img src="${user.avatar}" alt="${user.username}" width="100" height="auto" />
-        <strong>${user.username}</strong>
+        <img src="${currentUser.avatar}" alt="${currentUser.username}" width="100" height="auto" />
+        <strong>${currentUser.username}</strong>
       `
       document.body.prepend(h1)
     }
 
     const renderMessage = ({ user, text }) => {
+      const isCurrentUser = user.uuid === currentUser.uuid
       const div = document.createElement('div')
+      isCurrentUser
+        ? div.classList.add('text-end')
+        : null
       const badge = `
-        <div class="row">
-          <img src="${user.avatar}" alt="${user.username}" width="50" height="auto" />
-          <h6>${user.username}</h6>
-          ${text}
-        </div>
+        <img src="${user.avatar}" alt="${user.username}" width="50" height="auto" />
+        <h6>${user.username}</h6>
+        ${text}
       `
       div.innerHTML = badge
       messages.appendChild(div)
@@ -64,10 +66,9 @@
     const submit = e => {
       e.preventDefault()
       const msg = { 
-        user,
+        user: currentUser,
         text: msgInput.value 
       }
-      renderMessage(msg)
       socket.emit('newMessageToServer', msg)
       msgInput.value = ''
     }
