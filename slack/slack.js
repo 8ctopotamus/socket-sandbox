@@ -1,8 +1,10 @@
 const express = require('express')
 const socketio = require('socket.io')
+const namespaces = require('./data/namespaces')
 
 const PORT = process.env.PORT || 8000
 const app = express()
+
 app.use(express.static(__dirname + '/public'))
 
 const expressServer = app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`))
@@ -10,12 +12,18 @@ const expressServer = app.listen(PORT, () => console.log(`Listening at http://lo
 const io = socketio(expressServer)
 
 io.on('connection', socket => {
-  socket.emit('messageFromServer', { data: 'Wecome to socketio server'})
-  socket.on('messageToServer', dataFromClient => {
-    console.log(dataFromClient)
-  })
+  // build array to send img and endpoint for each NS
+  let nsData = namespaces.map(ns => ({
+    img: ns.img,
+    endpoint: ns.endpoint
+  }))
+  socket.emit('nsList', nsData)
 })
 
-io.of('/admin').on('connection', socket => {
-  io.of('/admin').emit('messageFromServer', { data: 'Wecome to admin channel'})
+// loop thru namespaces and listen for a connection
+namespaces.forEach(namespace => {
+  io.of(namespace.endpoint).on('connection', nsSocket => {
+    console.log(`${nsSocket.id} has joined ${namespace.endpoint}`)
+    nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
+  })
 })
