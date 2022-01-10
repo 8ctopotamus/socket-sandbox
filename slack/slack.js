@@ -24,6 +24,15 @@ io.on('connection', socket => {
 namespaces.forEach(namespace => {
   io.of(namespace.endpoint).on('connection', nsSocket => {
     console.log(`${nsSocket.id} has joined ${namespace.endpoint}`)
+    
     nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
+    
+    nsSocket.on('joinRoom', (roomName, numMembersCallback) => {
+      nsSocket.join(roomName)
+
+      io.of('/wiki').in(roomName).fetchSockets().then((clients) => {
+        numMembersCallback(clients.length)
+      })
+    })
   })
 })

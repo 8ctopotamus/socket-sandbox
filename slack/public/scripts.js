@@ -1,28 +1,51 @@
 const namespacesDiv = document.querySelector('.namespaces')
 const roomList = document.querySelector('.room-list')
-const messageForm = document.getElementById('message-form')
+const messageForm = document.querySelector('.message-form')
 const newMessageInput = document.getElementById('user-message')
 const messages = document.getElementById('messages')
+const currRoomNumUsers = document.querySelector('.curr-room-num-users')
+const currRoomText = document.querySelector('.curr-room-text')
 
 const SOCKET_BASE_URL = 'http://localhost:8000'
 const socket = io(SOCKET_BASE_URL)
+let nsSocket = null
 
 socket.on('connect', () => {
   console.log(`${socket.id} connected!`)
 })
 
+function joinRoom(roomName) {
+  nsSocket.emit('joinRoom', roomName, newNumMembers => {
+    currRoomNumUsers.innerHTML = `${newNumMembers} <span class="glyphicon glyphicon-user"></span>`
+  })
+}
+
 function joinNS(endpoint) {
-  const nsSocket = io(`${SOCKET_BASE_URL}/wiki`)
+  nsSocket = io(`${SOCKET_BASE_URL}${endpoint}`)
+  
   nsSocket.on('nsRoomLoad', nsRooms => {
     roomList.innerHTML = ''
     nsRooms.forEach(room => {
       const glyph = room.privateRoom ? 'lock' : 'globe'
       roomList.innerHTML += `
-        <li data-roomid=${room.roomId}>
+        <li class="room" data-roomid=${room.roomId}>
           <span class="glyphicon glyphicon-${glyph}"></span>${room.roomTitle}
         </li>    
       `
     })
+    const topRoom = document.querySelector('.room')
+    const topRoomName = topRoom.innerText
+    joinRoom(topRoomName)
+  })
+
+  nsSocket.on('messageToClients', msg => messages.innerHTML += `
+    <li>${msg.text}</li>
+  `) 
+  
+  messageForm.addEventListener('submit', e => {
+    e.preventDefault()
+    nsSocket.emit('newMessageToServer', newMessageInput.value)
+    newMessageInput.value = ''
   })
 }
 
@@ -48,16 +71,3 @@ namespacesDiv.addEventListener('click', ({ target }) => {
     console.log(target.parentElement.dataset.ns)
   }
 })
-
-socket.on('messageFromServer', data => console.log('from server'),data)
-
-messageForm.addEventListener('submit', e => {
-  preventDefault()
-  socket.emit('newMessageToServer', newMessageInput.value)
-  newMessageInput.value = ''
-})
-
-socket.on('messageToClients', msg => messages.innerHTML += `
-  <li>${msg.text}</li>
-`)
-
