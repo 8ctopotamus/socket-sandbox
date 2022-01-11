@@ -29,8 +29,8 @@ const buildMsgHTML = msg => {
   `
 }
 
-function joinRoom(roomName) {
-  nsSocket.emit('joinRoom', roomName, newNumMembers => {
+function joinRoom(roomTitle) {
+  nsSocket.emit('joinRoom', roomTitle, newNumMembers => {
     currRoomNumUsers.innerHTML = `${newNumMembers} <span class="glyphicon glyphicon-user"></span>`
   })
 }
@@ -49,11 +49,15 @@ function joinNS(endpoint) {
       `
     })
     const topRoom = document.querySelector('.room')
-    const topRoomName = topRoom.innerText
-    joinRoom(topRoomName)
+    const topRoomTitle = topRoom.innerText
+    joinRoom(topRoomTitle)
   })
 
   nsSocket.on('messageToClients', msg => messages.innerHTML += buildMsgHTML(msg)) 
+
+  nsSocket.on('historyCatchUp', history => {
+    history.forEach(msg => messages.innerHTML += buildMsgHTML(msg))
+  })
   
   messageForm.addEventListener('submit', e => {
     e.preventDefault()
