@@ -34,5 +34,16 @@ namespaces.forEach(namespace => {
         numMembersCallback(clients.length)
       })
     })
+
+    nsSocket.on('newMessageToServer', msg => {
+      const roomName = [...nsSocket.rooms][1]
+      const fullMsg = {
+        ...msg,
+        time: Date.now(),
+        username: 'Testttttt',
+        avatar: 'https://via.placeholder.com/30',
+      }
+      io.of('/wiki').to(roomName).emit('messageToClients', fullMsg)
+    })
   })
 })

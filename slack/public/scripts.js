@@ -1,6 +1,6 @@
 const namespacesDiv = document.querySelector('.namespaces')
 const roomList = document.querySelector('.room-list')
-const messageForm = document.querySelector('.message-form')
+const messageForm = document.getElementById('user-input')
 const newMessageInput = document.getElementById('user-message')
 const messages = document.getElementById('messages')
 const currRoomNumUsers = document.querySelector('.curr-room-num-users')
@@ -13,6 +13,21 @@ let nsSocket = null
 socket.on('connect', () => {
   console.log(`${socket.id} connected!`)
 })
+
+const buildMsgHTML = msg => {
+  const convertedDate = new Date(msg.time).toLocaleString()
+  return `
+    <li>
+        <div class="user-image">
+            <img src="${msg.avatar}" />
+        </div>
+        <div class="user-message">
+            <div class="user-name-time">${msg.username} <span>${convertedDate}</span></div>
+            <div class="message-text">${msg.text}</div>
+        </div>
+    </li>
+  `
+}
 
 function joinRoom(roomName) {
   nsSocket.emit('joinRoom', roomName, newNumMembers => {
@@ -38,14 +53,15 @@ function joinNS(endpoint) {
     joinRoom(topRoomName)
   })
 
-  nsSocket.on('messageToClients', msg => messages.innerHTML += `
-    <li>${msg.text}</li>
-  `) 
+  nsSocket.on('messageToClients', msg => messages.innerHTML += buildMsgHTML(msg)) 
   
   messageForm.addEventListener('submit', e => {
     e.preventDefault()
-    nsSocket.emit('newMessageToServer', newMessageInput.value)
-    newMessageInput.value = ''
+    const msg = newMessageInput.value
+    if (!!msg) {
+      nsSocket.emit('newMessageToServer', { text: msg })
+      newMessageInput.value = ''
+    }
   })
 }
 
