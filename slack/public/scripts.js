@@ -33,6 +33,10 @@ function joinRoom(roomTitle) {
   nsSocket.emit('joinRoom', roomTitle, newNumMembers => {
     currRoomNumUsers.innerHTML = `${newNumMembers} <span class="glyphicon glyphicon-user"></span>`
   })
+  nsSocket.on('historyCatchUp', history => {
+    history.forEach(msg => messages.innerHTML += buildMsgHTML(msg))
+    messages.scrollTo(0, messages.scrollHeight)
+  })
 }
 
 function joinNS(endpoint) {
@@ -55,10 +59,6 @@ function joinNS(endpoint) {
 
   nsSocket.on('messageToClients', msg => messages.innerHTML += buildMsgHTML(msg)) 
 
-  nsSocket.on('historyCatchUp', history => {
-    history.forEach(msg => messages.innerHTML += buildMsgHTML(msg))
-  })
-  
   messageForm.addEventListener('submit', e => {
     e.preventDefault()
     const msg = newMessageInput.value
