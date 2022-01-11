@@ -30,12 +30,13 @@ const buildMsgHTML = msg => {
 }
 
 function joinRoom(roomTitle) {
-  nsSocket.emit('joinRoom', roomTitle, newNumMembers => {
-    currRoomNumUsers.innerHTML = `${newNumMembers} <span class="glyphicon glyphicon-user"></span>`
-  })
+  nsSocket.emit('joinRoom', roomTitle)
   nsSocket.on('historyCatchUp', history => {
     history.forEach(msg => messages.innerHTML += buildMsgHTML(msg))
     messages.scrollTo(0, messages.scrollHeight)
+  })
+  nsSocket.on('updateMembersCount', count => {
+    currRoomNumUsers.innerHTML = `${count} <span class="glyphicon glyphicon-user"></span>`
   })
 }
 

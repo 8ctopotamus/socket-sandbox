@@ -27,16 +27,14 @@ namespaces.forEach(namespace => {
     
     nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
     
-    nsSocket.on('joinRoom', (roomTitle, numMembersCallback) => {
+    nsSocket.on('joinRoom', roomTitle => {
       nsSocket.join(roomTitle)
-
-      io.of('/wiki').in(roomTitle).fetchSockets().then((clients) => {
-        numMembersCallback(clients.length)
-      })
-
       const nsRoom = namespace.rooms.find(room => room.roomTitle === roomTitle)
       if (nsRoom) {
         nsSocket.emit('historyCatchUp', nsRoom.history)
+        io.of('/wiki').in(roomTitle).fetchSockets().then(clients => {
+          io.of('/wiki').in(roomTitle).emit('updateMembersCount', clients.length)
+        })
       }
     })
 
