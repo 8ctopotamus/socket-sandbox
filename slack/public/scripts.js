@@ -41,7 +41,21 @@ function joinRoom(roomTitle) {
   })
 }
 
+function handleFormSubmit(e) {
+  e.preventDefault()
+  const msg = newMessageInput.value
+  if (!!msg) {
+    nsSocket.emit('newMessageToServer', { text: msg })
+    newMessageInput.value = ''
+  }
+}
+
 function joinNS(endpoint) {
+  if (nsSocket) {
+    nsSocket.close()
+    messageForm.removeEventListener('submit', handleFormSubmit)
+  }
+
   nsSocket = io(`${SOCKET_BASE_URL}${endpoint}`)
   
   nsSocket.on('nsRoomLoad', nsRooms => {
@@ -61,14 +75,7 @@ function joinNS(endpoint) {
 
   nsSocket.on('messageToClients', msg => messages.innerHTML += buildMsgHTML(msg)) 
 
-  messageForm.addEventListener('submit', e => {
-    e.preventDefault()
-    const msg = newMessageInput.value
-    if (!!msg) {
-      nsSocket.emit('newMessageToServer', { text: msg })
-      newMessageInput.value = ''
-    }
-  })
+  messageForm.addEventListener('submit', handleFormSubmit)
 }
 
 socket.on('nsList', nsList => {
