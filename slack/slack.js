@@ -25,15 +25,15 @@ namespaces.forEach(namespace => {
   io.of(namespace.endpoint).on('connection', nsSocket => {
     console.log(`${nsSocket.id} has joined ${namespace.endpoint}`)
     
-    nsSocket.emit('nsRoomLoad', namespaces[0].rooms)
-    
+    nsSocket.emit('nsRoomLoad', namespace.rooms)
+
     nsSocket.on('joinRoom', roomTitle => {
       nsSocket.join(roomTitle)
       const nsRoom = namespace.rooms.find(room => room.roomTitle === roomTitle)
       if (nsRoom) {
         nsSocket.emit('historyCatchUp', nsRoom.history)
-        io.of('/wiki').in(roomTitle).fetchSockets().then(clients => {
-          io.of('/wiki').in(roomTitle).emit('updateMembersCount', clients.length)
+        io.of(namespace.endpoint).in(roomTitle).fetchSockets().then(clients => {
+          io.of(namespace.endpoint).in(roomTitle).emit('updateMembersCount', clients.length)
         })
       }
     })
@@ -49,7 +49,7 @@ namespaces.forEach(namespace => {
       const nsRoom = namespace.rooms.find(room => room.roomTitle === roomTitle)
       if (nsRoom) {
         nsRoom.addMessage(fullMsg)
-        io.of('/wiki').to(roomTitle).emit('messageToClients', fullMsg)
+        io.of(namespace.endpoint).to(roomTitle).emit('messageToClients', fullMsg)
       }
     })
   })

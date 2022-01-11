@@ -30,6 +30,7 @@ const buildMsgHTML = msg => {
 }
 
 function joinRoom(roomTitle) {
+  currRoomText.innerText = roomTitle
   nsSocket.emit('joinRoom', roomTitle)
   nsSocket.on('historyCatchUp', history => {
     history.forEach(msg => messages.innerHTML += buildMsgHTML(msg))
@@ -48,7 +49,7 @@ function joinNS(endpoint) {
     nsRooms.forEach(room => {
       const glyph = room.privateRoom ? 'lock' : 'globe'
       roomList.innerHTML += `
-        <li class="room" data-roomid=${room.roomId}>
+        <li class="room" data-roomtitle=${room.roomTitle}>
           <span class="glyphicon glyphicon-${glyph}"></span>${room.roomTitle}
         </li>    
       `
@@ -82,13 +83,13 @@ socket.on('nsList', nsList => {
 
 roomList.addEventListener('click', ({ target }) => {
   if (target.tagName !== 'UL') {
-    const roomId = target.dataset.roomid
-    console.log(roomId)
+    const roomtitle = target.dataset.roomtitle
+    joinRoom(roomtitle)
   }
 })
 
 namespacesDiv.addEventListener('click', ({ target }) => {
   if (target.tagName === 'IMG') {
-    console.log(target.parentElement.dataset.ns)
+    joinNS(target.parentElement.dataset.ns)
   }
 })
