@@ -23,19 +23,23 @@ io.on('connection', socket => {
 // loop thru namespaces and listen for a connection
 namespaces.forEach(namespace => {
   io.of(namespace.endpoint).on('connection', nsSocket => {
-    console.log(`${nsSocket.id} has joined ${namespace.endpoint}`)
+    const username = nsSocket.handshake.query.username
+    console.log(`${username} has joined ${namespace.endpoint}`)
     
     nsSocket.emit('nsRoomLoad', namespace.rooms)
 
     nsSocket.on('joinRoom', roomTitle => {
+      // leave previously connected nsSocket
+      const roomToLeaveTitle = [...nsSocket.rooms][1]
+      nsSocket.leave(roomToLeaveTitle)
+
+      // join next nsSocket
       nsSocket.join(roomTitle)
+      updateUsersInRoom(namespace, roomToLeaveTitle)
+      
       const nsRoom = namespace.rooms.find(room => room.roomTitle === roomTitle)
-      if (nsRoom) {
-        nsSocket.emit('historyCatchUp', nsRoom.history)
-        io.of(namespace.endpoint).in(roomTitle).fetchSockets().then(clients => {
-          io.of(namespace.endpoint).in(roomTitle).emit('updateMembersCount', clients.length)
-        })
-      }
+      nsSocket.emit('historyCatchUp', nsRoom.history)
+      updateUsersInRoom(namespace, roomTitle)
     })
 
     nsSocket.on('newMessageToServer', msg => {
@@ -43,7 +47,7 @@ namespaces.forEach(namespace => {
       const fullMsg = {
         ...msg,
         time: Date.now(),
-        username: 'Testttttt',
+        username,
         avatar: 'https://via.placeholder.com/30',
       }
       const nsRoom = namespace.rooms.find(room => room.roomTitle === roomTitle)
@@ -54,3 +58,10 @@ namespaces.forEach(namespace => {
     })
   })
 })
+
+
+function updateUsersInRoom(namespace, roomTitle) {
+  io.of(namespace.endpoint).in(roomTitle).fetchSockets().then(clients => {
+    io.of(namespace.endpoint).in(roomTitle).emit('updateMembersCount', clients.length)
+  })
+}

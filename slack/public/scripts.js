@@ -5,9 +5,13 @@ const newMessageInput = document.getElementById('user-message')
 const messages = document.getElementById('messages')
 const currRoomNumUsers = document.querySelector('.curr-room-num-users')
 const currRoomText = document.querySelector('.curr-room-text')
+const searchBox = document.getElementById('search-box')
+
+const username = prompt('What is your username?')
 
 const SOCKET_BASE_URL = 'http://localhost:8000'
-const socket = io(SOCKET_BASE_URL)
+const socket = io(SOCKET_BASE_URL, { query: { username } })
+
 let nsSocket = null
 
 socket.on('connect', () => {
@@ -39,15 +43,8 @@ function joinRoom(roomTitle) {
   nsSocket.on('updateMembersCount', count => {
     currRoomNumUsers.innerHTML = `${count} <span class="glyphicon glyphicon-user"></span>`
   })
-}
-
-function handleFormSubmit(e) {
-  e.preventDefault()
-  const msg = newMessageInput.value
-  if (!!msg) {
-    nsSocket.emit('newMessageToServer', { text: msg })
-    newMessageInput.value = ''
-  }
+  searchBox.removeEventListener('input', handleSearchBoxInputEvt)
+  searchBox.addEventListener('input', handleSearchBoxInputEvt)
 }
 
 function joinNS(endpoint) {
@@ -63,7 +60,7 @@ function joinNS(endpoint) {
     nsRooms.forEach(room => {
       const glyph = room.privateRoom ? 'lock' : 'globe'
       roomList.innerHTML += `
-        <li class="room" data-roomtitle=${room.roomTitle}>
+        <li class="room" data-roomtitle="${room.roomTitle}">
           <span class="glyphicon glyphicon-${glyph}"></span>${room.roomTitle}
         </li>    
       `
@@ -76,6 +73,27 @@ function joinNS(endpoint) {
   nsSocket.on('messageToClients', msg => messages.innerHTML += buildMsgHTML(msg)) 
 
   messageForm.addEventListener('submit', handleFormSubmit)
+}
+
+function handleFormSubmit(e) {
+  e.preventDefault()
+  const msg = newMessageInput.value
+  if (!!msg) {
+    nsSocket.emit('newMessageToServer', { text: msg })
+    newMessageInput.value = ''
+  }
+}
+
+function handleSearchBoxInputEvt(e) {
+  console.log(e.target.value)
+  const messages = Array.from(document.getElementsByClassName('message-text'))
+  messages.forEach(msg => {
+    if (msg.innerText.toLowerCase().indexOf(e.target.value.toLowerCase()) === -1) 
+      msg.style.display = 'none'
+    else
+      msg.style.display = 'block'
+  })
+
 }
 
 socket.on('nsList', nsList => {
