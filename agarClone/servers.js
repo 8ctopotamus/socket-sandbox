@@ -6,7 +6,7 @@ app.use(express.static(`${__dirname}/public`))
 const socketio = require('socket.io')
 const expressServer = app.listen(PORT)
 const io = socketio(expressServer)
-app.use(helmet)
+app.use(helmet())
 console.log(`Express and SocketIO listening on http://localhost:${PORT}`)
 
 module.exports = { app, io }
