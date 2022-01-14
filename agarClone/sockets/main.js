@@ -37,6 +37,7 @@ io.sockets.on('connect', socket => {
     const playerConfig = new PlayerConfig(settings)
     const playerData = new PlayerData(data.playerName, settings)
     player = new Player(socket.id, playerConfig, playerData)
+
     socket.emit('initReturn', { orbs })
     players.push(playerData)
   })
@@ -45,21 +46,19 @@ io.sockets.on('connect', socket => {
     const speed = player.playerConfig.speed
     const xV = player.playerConfig.xVector = data.xVector;
     const yV = player.playerConfig.yVector = data.yVector;
-    console.log('------')
-    console.log(xV, yV)
+
     console.log(player)
-    console.log(player.locX, player.locY)
 
 
-    if ((player.locX < 5 && player.xVector < 0) || (player.locX > 500) && (xV > 0)) {
-      player.locY -= speed * yV;
-    } else if ((player.locY < 5 && yV > 0) || (player.locY > 500) && (yV < 0)) {
-      player.locX += speed * xV;
+    if ((player.playerData.locX < 5 && player.playerData.xVector < 0) || (player.playerData.locX > 500) && (xV > 0)) {
+      player.playerData.locY -= speed * yV;
+    } else if ((player.playerData.locY < 5 && yV > 0) || (player.playerData.locY > 500) && (yV < 0)) {
+      player.playerData.locX += speed * xV;
     } else {
-      player.locX += speed * xV;
-      player.locY -= speed * yV;
+      player.playerData.locX += speed * xV;
+      player.playerData.locY -= speed * yV;
     }
-    console.log(player.locX, player.locY)
+    console.log(player.playerData.locX, player.playerData.locY)
 
   })
 })
