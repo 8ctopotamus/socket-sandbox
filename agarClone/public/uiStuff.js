@@ -11,6 +11,8 @@ canvas.width = wWidth
 canvas.height = wHeight
 
 let player = {}
+let players = []
+let orbs = []
 
 $(window).load(() => $loginModal.modal('show'))
 
