@@ -17,6 +17,6 @@ socket.on('initReturn', data => {
 })
 
 socket.on('tock', data => {
-  console.log(data)
+  // console.log(data)
   players = data.players
 })

@@ -32,8 +32,10 @@ setInterval(() => {
 
 io.sockets.on('connect', socket => {
   let player = {}
+  
   socket.on('init', data => {
     socket.join('game')
+    
     const playerConfig = new PlayerConfig(settings)
     const playerData = new PlayerData(data.playerName, settings)
     player = new Player(socket.id, playerConfig, playerData)
@@ -41,14 +43,14 @@ io.sockets.on('connect', socket => {
     socket.emit('initReturn', { orbs })
     players.push(playerData)
   })
+
   socket.on('tick', data => {
     if (Object.keys(player).length === 0) return
     const speed = player.playerConfig.speed
     const xV = player.playerConfig.xVector = data.xVector;
     const yV = player.playerConfig.yVector = data.yVector;
 
-    console.log(player)
-
+    console.log(player.playerData)
 
     if ((player.playerData.locX < 5 && player.playerData.xVector < 0) || (player.playerData.locX > 500) && (xV > 0)) {
       player.playerData.locY -= speed * yV;
@@ -58,8 +60,7 @@ io.sockets.on('connect', socket => {
       player.playerData.locX += speed * xV;
       player.playerData.locY -= speed * yV;
     }
-    console.log(player.playerData.locX, player.playerData.locY)
-
+    // console.log(player.playerData.locX, player.playerData.locY)
   })
 })
 
