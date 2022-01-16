@@ -1,6 +1,3 @@
-player.locX = Math.floor(Math.random() * 500 + 100)
-player.locY = Math.floor(Math.random() * 500 + 100)
-
 function draw() {
   // reset canvas
   context.setTransform(1, 0, 0, 1, 0, 0)
