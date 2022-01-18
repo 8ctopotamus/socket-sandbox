@@ -23,5 +23,5 @@ socket.on('tock', data => {
 })
 
 socket.on('orbSwitch', data => {
-  
+  orbs.splice(data.orbIndex, 1, data.newOrb)
 })
