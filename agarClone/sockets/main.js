@@ -22,6 +22,12 @@ function initGame() {
   }
 }
 
+function getLeaderBoard() {
+  return players
+    .sort((a, b) => b.score - a.score)
+    .map(player => ({ name: player.name, score: player.score }))
+}
+
 initGame()
 
 // issue a message to EVERY connected socket 30 fps
@@ -70,6 +76,8 @@ io.sockets.on('connect', socket => {
     // ORB COLLISSION
     const capturedOrb = checkForOrbCollisions(player.playerData, player.playerConfig, orbs, settings)
     capturedOrb.then(data => {
+      // every socket needs to know leaderBoard has changed
+      io.sockets.emit('updateLeaderboard', getLeaderBoard())
       io.sockets.emit('orbSwitch', {
         orbIndex: data,
         newOrb: orbs[data]
@@ -78,8 +86,9 @@ io.sockets.on('connect', socket => {
 
     // PLAYER COLLISION
     const playerDeath = checkForPlayerCollisions(player.playerData, player.playerConfig, players, player.socketId)
-    playerDeath.then(data => {
-      console.log(data)
+    playerDeath.then(() => {
+      // every socket needs to know leaderBoard has changed
+      io.sockets.emit('updateLeaderboard', getLeaderBoard())
     }).catch(err => {})
   })
 })

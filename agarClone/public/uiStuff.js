@@ -3,6 +3,7 @@ const wWidth = $(window).width()
 const $loginModal = $('#loginModal')
 const $nameInput = $('#name-input')
 const $spawnModal = $('#spawnModal')
+const leaderBoard = document.querySelector('.leader-board')
 
 const canvas = document.getElementById('the-canvas')
 const context = canvas.getContext('2d')

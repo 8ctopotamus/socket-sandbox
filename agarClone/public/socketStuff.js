@@ -28,3 +28,10 @@ socket.on('tickTock', data => {
   player.locX = data.playerX
   player.locY = data.playerY
 })
+
+socket.on('updateLeaderboard', data => {
+  leaderBoard.innerHTML = ''
+  data.forEach(player => leaderBoard.innerHTML += `
+    <li class="leaderboard-player">${player.name} - ${player.score}<li>
+  `)
+})
