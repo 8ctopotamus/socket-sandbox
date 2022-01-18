@@ -21,3 +21,7 @@ socket.on('tock', data => {
   player.locX = data.playerX
   player.locY = data.playerY
 })
+
+socket.on('orbSwitch', data => {
+  
+})

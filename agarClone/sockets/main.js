@@ -3,6 +3,7 @@ const Orb = require('./classes/Orb')
 const Player = require('./classes/Player')
 const PlayerConfig = require('./classes/PlayerConfig')
 const PlayerData = require('./classes/PlayerData')
+const { checkForOrbCollisions, checkForPlayerCollisions } = require('./checkCollisions')
 
 let orbs = []
 let players = []
@@ -58,6 +59,14 @@ io.sockets.on('connect', socket => {
       player.playerData.locX += speed * xV
       player.playerData.locY -= speed * yV
     }
+    const capturedOrb = checkForOrbCollisions(player.playerData, player.playerConfig, orbs, settings)
+    capturedOrb.then(data => {
+      io.sockets.emit('orbSwitch', {
+        orbIndex: data,
+        newOrb: orbs[data]
+      })
+    })
+      // .catch(err => {})
   })
 })
 
