@@ -77,7 +77,7 @@ io.sockets.on('connect', socket => {
     const capturedOrb = checkForOrbCollisions(player.playerData, player.playerConfig, orbs, settings)
     capturedOrb.then(data => {
       // every socket needs to know leaderBoard has changed
-      io.sockets.emit('updateLeaderboard', getLeaderBoard())
+      io.sockets.emit('updateLeaderBoard', getLeaderBoard())
       io.sockets.emit('orbSwitch', {
         orbIndex: data,
         newOrb: orbs[data]
@@ -88,8 +88,28 @@ io.sockets.on('connect', socket => {
     const playerDeath = checkForPlayerCollisions(player.playerData, player.playerConfig, players, player.socketId)
     playerDeath.then(() => {
       // every socket needs to know leaderBoard has changed
-      io.sockets.emit('updateLeaderboard', getLeaderBoard())
+      io.sockets.emit('updateLeaderBoard', getLeaderBoard())
     }).catch(err => {})
+  })
+
+  socket.on('disconnect', data => {
+    if (player.playerData) {
+      // find out who just left
+      players.forEach((currPlayer, i) => {
+        if (currPlayer.uid == player.playerData.uid) {
+          players.splice(i, 1)
+          io.sockets.emit('updateLeaderBoard', getLeaderBoard())
+        }
+      })
+      // TODO:
+      // const updateStats = `
+      //         UPDATE stats
+      //             SET highScore = CASE WHEN highScore < ? THEN ? ELSE highScore END,
+      //             mostOrbs = CASE WHEN mostOrbs < ? THEN ? ELSE mostOrbs END,
+      //             mostPlayers = CASE WHEN mostPlayers < ? THEN ? ELSE mostPlayers END
+      //         WHERE username = ?
+      //         `
+    }
   })
 })
 
