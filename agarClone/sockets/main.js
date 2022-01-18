@@ -86,9 +86,11 @@ io.sockets.on('connect', socket => {
 
     // PLAYER COLLISION
     const playerDeath = checkForPlayerCollisions(player.playerData, player.playerConfig, players, player.socketId)
-    playerDeath.then(() => {
+    playerDeath.then(data => {
       // every socket needs to know leaderBoard has changed
       io.sockets.emit('updateLeaderBoard', getLeaderBoard())
+      // a player was absorbed, let everyone know
+      io.socket.emit('playerDeath', data)
     }).catch(err => {})
   })
 
