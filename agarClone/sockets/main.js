@@ -103,7 +103,7 @@ io.sockets.on('connect', socket => {
           io.sockets.emit('updateLeaderBoard', getLeaderBoard())
         }
       })
-      // TODO:
+      // TODO: save in DB
       // const updateStats = `
       //         UPDATE stats
       //             SET highScore = CASE WHEN highScore < ? THEN ? ELSE highScore END,
