@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "farmhash": "^3.2.2",
+    "socket.io-client": "^4.4.1"
+  }
+}
