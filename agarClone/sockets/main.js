@@ -90,7 +90,7 @@ io.sockets.on('connect', socket => {
       // every socket needs to know leaderBoard has changed
       io.sockets.emit('updateLeaderBoard', getLeaderBoard())
       // a player was absorbed, let everyone know
-      io.socket.emit('playerDeath', data)
+      io.sockets.emit('playerDeath', data)
     }).catch(err => {})
   })
 
