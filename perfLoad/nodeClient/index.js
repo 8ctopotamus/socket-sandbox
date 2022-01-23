@@ -12,11 +12,16 @@ socket.on('connect', () => {
       break
     }
   }
+  
+  socket.emit('clientAuth', 'nodeClient_XXXXXXXXXXXXXXXXXX')
+
   let perfDataInterval = setInterval(() => {
     performanceData().then(allPerformanceData => {
       socket.emit('perfData', allPerformanceData)
     })
   }, 1000)
+
+  socket.on('disconnect', () => clearInterval(perfDataInterval))
 })
 
 function performanceData() {
