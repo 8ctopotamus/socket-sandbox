@@ -4,6 +4,19 @@ const socket = io('http://localhost:8181')
 
 socket.on('connect', () => {
   console.log('Socket client connected!')
+  const nI = os.networkInterfaces()
+  let macA
+  for (let key in nI) {
+    if (!nI[key][0].internal) {
+      macA = nI[key][0].mac
+      break
+    }
+  }
+  let perfDataInterval = setInterval(() => {
+    performanceData().then(allPerformanceData => {
+      socket.emit('perfData', allPerformanceData)
+    })
+  }, 1000)
 })
 
 function performanceData() {
@@ -62,5 +75,3 @@ function getCPULoad() {
     }, 100)
   })
 }
-
-performanceData().then(allPerformanceData => console.log(allPerformanceData))
