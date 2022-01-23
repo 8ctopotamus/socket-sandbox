@@ -4,6 +4,7 @@ const Machine = require('./models/Machine')
 
 function socketMain(io, socket) {
   // console.log(`Socket ${socket.id} connected`)
+  let macA
 
   socket.on('clientAuth', key => {
     if (key === 'nodeClient_XXXXXXXXXXXXXXXXXX') {
@@ -18,8 +19,33 @@ function socketMain(io, socket) {
     }
   })
 
+  socket.on('initPerfData', async data => {
+    macA = data.macA
+    const mongooseResponse = await checkAndAdd(data)
+    console.log(mongooseResponse)
+  })
+
   socket.on('perfData', data => {
     console.log(data)
+  })
+}
+
+function checkAndAdd(data) {
+  return new Promise((resolve) => {
+    Machine.findOne(
+      { macA: data.macA },
+      (err, doc) => {
+        if (err) {
+          throw err
+        } else if (doc === null) {
+          let newMachine = new Machine(data)
+          newMachine.save()
+          resolve('added')
+        } else {
+          resolve('found')
+        }
+      }
+    )
   })
 }
 

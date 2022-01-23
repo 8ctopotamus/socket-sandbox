@@ -15,6 +15,13 @@ socket.on('connect', () => {
   
   socket.emit('clientAuth', 'nodeClient_XXXXXXXXXXXXXXXXXX')
 
+  performanceData().then(allPerformanceData => {
+    socket.emit('initPerfData', {
+      macA,
+      ...allPerformanceData,
+    })
+  })
+
   let perfDataInterval = setInterval(() => {
     performanceData().then(allPerformanceData => {
       socket.emit('perfData', allPerformanceData)
