@@ -1,6 +1,12 @@
 const os = require('os')
+const io = require('socket.io-client')
+const socket = io('http://localhost:8181')
 
- function performanceData() {
+socket.on('connect', () => {
+  console.log('Socket client connected!')
+})
+
+function performanceData() {
   return new Promise(async resolve => {
     const osType = os.type() === 'Darwin' ? 'Mac' : os.type()
     const upTime = os.uptime()
