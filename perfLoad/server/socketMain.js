@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-
+mongoose.connect('mongodb://127.0.0.1/perfData', { useNewUrlParser: true })
 
 function socketMain(io, socket) {
   // console.log(`Socket ${socket.id} connected`)
