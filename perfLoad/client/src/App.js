@@ -18,10 +18,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {Object.entries(performanceData).map(entry => {
-          const [key, value] = entry
-          return <Widget data={value} key={key} />
-        })}
+        <div className='container'>
+          {Object.entries(performanceData).map(entry => {
+            const [key, value] = entry
+            return <Widget data={value} key={key} />
+          })}
+        </div>
       </header>
     </div>
   );

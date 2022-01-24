@@ -22,13 +22,11 @@ const Widget = ({
   const mem = { totalMem, usedMem, memUsage, freeMem }
   const info = { macA, osType, upTime, cpuModel, cpuSpeed, numCors }
   return (
-    <>
-      <div>
-        <CPU cpuData={cpu} />
-        <Mem memData={mem} />
-        <Info infoData={info} />
-      </div>
-    </>
+    <div className="row">
+      <CPU cpuData={cpu} />
+      <Mem memData={mem} />
+      <Info infoData={info} />
+    </div>
   )
 }
 

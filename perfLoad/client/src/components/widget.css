@@ -28,9 +28,7 @@
 }
 
 .cpu,.mem{
-  background-color: white;
   position: relative;
-  text-align: center
 }
 
 .cpu-text, .mem-text{
