@@ -1,10 +1,15 @@
+import { useEffect, useState } from 'react'
 import logo from './logo.svg';
-import './App.css';
 import socket from './utilities/socketConnection'
-
-console.log(socket)
+import './App.css';
 
 function App() {
+  const [performanceData, setPerformanceData] = useState({})
+
+  useEffect(() => {
+    socket.on('data', data => console.log(data))
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
