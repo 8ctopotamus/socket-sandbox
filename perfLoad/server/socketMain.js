@@ -13,6 +13,7 @@ function socketMain(io, socket) {
     } else if (key === 'reactClient_XXXXXXXXXXXXXXXXXX') {
       // valid ui client
       socket.join('ui')
+      console.log('A react client has joined!')
     } else {
       // invalid client trying to join... goodbye
       socket.disconnect(true)
@@ -22,11 +23,10 @@ function socketMain(io, socket) {
   socket.on('initPerfData', async data => {
     macA = data.macA
     const mongooseResponse = await checkAndAdd(data)
-    console.log(mongooseResponse)
   })
 
   socket.on('perfData', data => {
-    console.log(data)
+    // console.log(data)
   })
 }
 
