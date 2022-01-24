@@ -8,7 +8,8 @@ socket.on('connect', () => {
   let macA
   for (let key in nI) {
     if (!nI[key][0].internal) {
-      macA = nI[key][0].mac
+      macA = Math.floor(Math.random() * 3) + 1 // for testing
+      // macA = nI[key][0].mac
       break
     }
   }
@@ -17,16 +18,16 @@ socket.on('connect', () => {
 
   performanceData().then(allPerformanceData => {
     socket.emit('initPerfData', {
-      macA,
       ...allPerformanceData,
+      macA,
     })
   })
 
   let perfDataInterval = setInterval(() => {
     performanceData().then(allPerformanceData => {
       socket.emit('perfData', {
-        macA,
         ...allPerformanceData,
+        macA,
       })
     })
   }, 1000)
@@ -47,6 +48,7 @@ function performanceData() {
     const cpuSpeed = cpus[0].speed
     const numCors = cpus.length
     const cpuLoad = await getCPULoad()
+    const isActive = true
     resolve({
       osType,
       upTime,
@@ -58,6 +60,7 @@ function performanceData() {
       cpuSpeed,
       numCors,
       cpuLoad,
+      isActive,
     })
   })
 }

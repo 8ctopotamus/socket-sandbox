@@ -14,15 +14,31 @@ function socketMain(io, socket) {
       // valid ui client
       socket.join('ui')
       console.log('A react client has joined!')
+      Machine.find({}, (err, docs) => {
+        // assume all machines are offline
+        docs.forEach(machine => {
+          machine.isActive = false
+          io.to('ui').emit('data', machine)
+        })
+      })
     } else {
       // invalid client trying to join... goodbye
       socket.disconnect(true)
     }
+
+    socket.on('disconnect', () => {
+      Machine.find({ macA: macA }, (err, docs) => {
+        if (docs.length > 0) {
+          docs[0].isActive = false
+          io.to('ui').emit('data', docs[0])
+        }
+      })
+    })
   })
 
   socket.on('initPerfData', async data => {
     macA = data.macA
-    const mongooseResponse = await checkAndAdd(data)
+    await checkAndAdd(data)
   })
 
   socket.on('perfData', data => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import socket from './utilities/socketConnection'
 import './App.css';
 import Widget from './components/Widget';
@@ -6,11 +6,12 @@ import Widget from './components/Widget';
 function App() {
   const [performanceData, setPerformanceData] = useState({})
 
+  
   useEffect(() => {
     socket.on('data', data => {
       setPerformanceData({
         ...performanceData,
-        [data.macA]: data,
+        [`test-${data.macA}`]: data
       })
     })
   }, [])
