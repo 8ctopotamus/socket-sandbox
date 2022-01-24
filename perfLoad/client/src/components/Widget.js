@@ -1,6 +1,7 @@
 import CPU from "./CPU"
 import Info from "./Info"
 import Mem from "./Mem"
+import './widget.css'
 
 const Widget = ({ 
   data: {
